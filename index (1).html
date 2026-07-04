@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>Suruh.in — Jasa Suruh Apa Saja</title>
+<meta name="description" content="Pesan jasa antar-jemput, beli-beliin, urus dokumen, angkut barang, dan tugas dadakan lainnya di area Bekasi & sekitarnya.">
+<meta name="theme-color" content="#152238">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Suruh.in">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EDE6D6;
+    --paper-dark:#E2D9C4;
+    --ink:#22201B;
+    --navy:#152238;
+    --stamp:#B23A2E;
+    --kraft:#B8863C;
+    --line: rgba(34,32,27,0.18);
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  *{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    line-height:1.5;
+    overscroll-behavior-y:none;
+    position:fixed; inset:0;
+    display:flex; flex-direction:column;
+  }
+  h1,h2,h3{font-family:'Special Elite', monospace; letter-spacing:0.4px;}
+  .mono{font-family:'Space Mono', monospace;}
+  a{color:inherit;}
+  button{font-family:inherit;}
+
+  /* ---------- TOP BAR ---------- */
+  .topbar{
+    background:var(--navy); color:var(--paper);
+    padding:calc(14px + var(--safe-top)) 20px 14px;
+    display:flex; align-items:center; justify-content:space-between;
+    flex-shrink:0;
+  }
+  .topbar .brand{font-family:'Special Elite',monospace; font-size:18px; display:flex; align-items:center; gap:6px;}
+  .topbar .brand .dot{color:var(--stamp);}
+  .topbar .status{font-family:'Space Mono',monospace; font-size:10px; letter-spacing:1px; background:rgba(237,230,214,0.12); padding:5px 10px; border-radius:20px; display:flex; align-items:center; gap:6px;}
+  .topbar .status .dotpulse{width:7px; height:7px; border-radius:50%; background:#6FCF97; box-shadow:0 0 0 0 rgba(111,207,151,0.6); animation:pulse 2s infinite;}
+  @keyframes pulse{
+    0%{ box-shadow:0 0 0 0 rgba(111,207,151,0.6);}
+    70%{ box-shadow:0 0 0 7px rgba(111,207,151,0);}
+    100%{ box-shadow:0 0 0 0 rgba(111,207,151,0);}
+  }
+
+  /* ---------- SCROLL AREA ---------- */
+  .views{flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; position:relative;}
+  .view{display:none; padding:20px 20px calc(28px + var(--safe-bottom) + 70px);}
+  .view.active{display:block; animation:fadeIn .25s ease;}
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+  .section-label{
+    font-family:'Space Mono', monospace; font-size:11px; letter-spacing:2.5px; text-transform:uppercase;
+    color:var(--stamp); font-weight:700; margin-bottom:8px; display:inline-block;
+  }
+
+  /* ---------- HOME ---------- */
+  .home-hero{margin-bottom:22px;}
+  .home-hero h1{font-size:28px; line-height:1.15; margin-bottom:10px;}
+  .home-hero h1 .accent{color:var(--stamp);}
+  .home-hero p{font-size:14px; color:#4a4636; max-width:34ch;}
+
+  .ticket{
+    background:#F7F2E4; border:1.5px solid var(--ink);
+    padding:20px 18px 18px; position:relative; margin-bottom:24px;
+    box-shadow:6px 7px 0 rgba(21,34,56,0.85);
+  }
+  .ticket::before, .ticket::after{
+    content:""; position:absolute; left:0; right:0; height:12px;
+    background-image: radial-gradient(circle, var(--paper) 4.5px, transparent 5px);
+    background-size:16px 16px; background-position:-4px center; background-repeat:repeat-x;
+  }
+  .ticket::before{top:-6px;} .ticket::after{bottom:-6px;}
+  .ticket-row{display:flex; justify-content:space-between; font-family:'Space Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; color:#6b6656; border-bottom:1px dashed var(--line); padding-bottom:8px; margin-bottom:10px;}
+  .ticket h3{font-size:14px; margin-bottom:8px;}
+  .ticket .item{display:flex; justify-content:space-between; font-size:12.5px; padding:5px 0; border-bottom:1px dotted var(--line);}
+  .ticket .item span:last-child{font-family:'Space Mono',monospace; font-weight:700;}
+  .ticket .total{display:flex; justify-content:space-between; margin-top:10px; padding-top:8px; border-top:2px solid var(--ink); font-family:'Space Mono',monospace; font-weight:700; font-size:13px;}
+
+  .quick-title{font-size:15px; margin:0 0 12px; font-family:'Inter',sans-serif; font-weight:700;}
+  .quick-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:24px;}
+  .quick-item{
+    background:var(--paper-dark); border:1.5px solid var(--ink); padding:14px 8px; text-align:center;
+    font-size:11.5px; font-weight:600; cursor:pointer;
+  }
+  .quick-item:active{transform:scale(0.96);}
+  .quick-item .ic{font-size:22px; display:block; margin-bottom:6px;}
+
+  .cta-big{
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    width:100%; padding:16px; background:var(--stamp); color:#fff; border:2px solid var(--stamp);
+    font-weight:700; font-size:15px; cursor:pointer; margin-bottom:8px;
+  }
+  .cta-big:active{transform:scale(0.98);}
+
+  /* ---------- LAYANAN ---------- */
+  .stub{background:var(--paper-dark); border:1.5px solid var(--ink); padding:16px; margin-bottom:12px; position:relative;}
+  .stub .num{font-family:'Space Mono',monospace; font-size:11px; color:var(--stamp); font-weight:700; letter-spacing:2px;}
+  .stub h3{font-size:15px; margin:6px 0 4px;}
+  .stub p{font-size:12.5px; color:#4a4636; margin-bottom:8px;}
+  .stub .foot{display:flex; justify-content:space-between; align-items:center;}
+  .stub .price{font-family:'Space Mono',monospace; font-weight:700; font-size:13px;}
+  .stub .order-mini{font-size:11.5px; font-weight:700; color:var(--navy); border:1.5px solid var(--navy); padding:6px 12px; cursor:pointer;}
+  .stub .order-mini:active{background:var(--navy); color:var(--paper);}
+
+  /* ---------- PESAN (FORM) ---------- */
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; color:#4a4636;}
+  .field input, .field textarea, .field select{
+    width:100%; padding:12px 13px; border:1.5px solid var(--ink); background:var(--paper);
+    font-family:'Inter',sans-serif; font-size:14px; color:var(--ink);
+  }
+  .field input:focus, .field textarea:focus, .field select:focus{ outline:3px solid var(--stamp); outline-offset:1px; }
+  .field textarea{resize:vertical; min-height:76px;}
+  .row-2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .form-note{font-size:11.5px; color:#6b6656; margin-top:8px; text-align:center;}
+
+  /* ---------- RIWAYAT ---------- */
+  .riwayat-item{background:var(--paper-dark); border:1.5px solid var(--ink); padding:14px 16px; margin-bottom:10px;}
+  .riwayat-item .top{display:flex; justify-content:space-between; font-family:'Space Mono',monospace; font-size:11px; color:#6b6656; margin-bottom:6px;}
+  .riwayat-item h4{font-size:14px; margin-bottom:4px;}
+  .riwayat-item p{font-size:12px; color:#4a4636;}
+  .riwayat-item .badge{display:inline-block; margin-top:8px; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:1px; padding:3px 9px; background:var(--stamp); color:#fff;}
+  .empty-state{text-align:center; padding:60px 20px; color:#6b6656;}
+  .empty-state .ic{font-size:40px; display:block; margin-bottom:14px;}
+  .empty-state p{font-size:13.5px;}
+
+  /* ---------- BANTUAN ---------- */
+  .help-card{background:var(--paper-dark); border:1.5px solid var(--ink); padding:16px; margin-bottom:12px;}
+  .help-card h4{font-size:14px; margin-bottom:6px;}
+  .help-card p{font-size:12.5px; color:#4a4636;}
+  .contact-row{display:flex; align-items:center; gap:12px; background:var(--navy); color:var(--paper); padding:16px; margin-bottom:16px;}
+  .contact-row .ic{font-size:26px;}
+  .contact-row h4{font-size:14px; color:var(--paper); margin-bottom:2px;}
+  .contact-row p{font-size:11.5px; color:#C7CBD8;}
+
+  /* ---------- BOTTOM NAV ---------- */
+  .bottomnav{
+    flex-shrink:0; display:flex; background:var(--paper);
+    border-top:2px dashed var(--line);
+    padding:8px 6px calc(8px + var(--safe-bottom));
+    position:sticky; bottom:0;
+  }
+  .navbtn{
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;
+    background:none; border:none; color:#7a7666; font-size:10px; font-weight:700;
+    padding:6px 2px; cursor:pointer; letter-spacing:0.3px;
+  }
+  .navbtn .ic{font-size:19px;}
+  .navbtn.active{color:var(--stamp);}
+
+  /* install prompt */
+  .install-banner{
+    position:absolute; left:16px; right:16px; bottom:16px;
+    background:var(--navy); color:var(--paper); padding:14px 16px;
+    display:flex; align-items:center; gap:12px; z-index:40;
+    border:1.5px solid var(--ink);
+    transform:translateY(120%); transition:transform .3s ease;
+  }
+  .install-banner.show{ transform:translateY(0); }
+  .install-banner p{font-size:12px; flex:1; color:#C7CBD8;}
+  .install-banner button{background:var(--stamp); color:#fff; border:none; padding:8px 12px; font-size:12px; font-weight:700;}
+  .install-banner .close-x{background:none; color:var(--paper); padding:4px; font-size:14px;}
+
+  ::-webkit-scrollbar{width:0px;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">SURUH<span class="dot">.</span>IN</div>
+  <div class="status"><span class="dotpulse"></span>Buka 24 Jam</div>
+</div>
+
+<div class="views">
+
+  <!-- ================= HOME ================= -->
+  <section class="view active" id="view-beranda">
+    <div class="home-hero">
+      <span class="section-label">No. Antrian dibuka 24 jam</span>
+      <h1>Malas ngurus?<br><span class="accent">Suruh</span> aja, beres.</h1>
+      <p>Antar-jemput, beli-beliin, urus dokumen, angkut barang — apa pun tugas remeh, tinggal ketik, kami kerjakan.</p>
+    </div>
+
+    <div class="ticket">
+      <div class="ticket-row"><span>Tiket Suruh.in</span><span>#00147</span></div>
+      <h3>Beli-beliin: Galon &amp; Obat</h3>
+      <div class="item"><span>Jemput di apotek Kimia Farma</span><span>1.2 km</span></div>
+      <div class="item"><span>Antar ke rumah, lantai 2</span><span>0.8 km</span></div>
+      <div class="total"><span>TOTAL JASA</span><span>Rp 25.000</span></div>
+    </div>
+
+    <p class="quick-title">Pilih cepat</p>
+    <div class="quick-grid">
+      <div class="quick-item" onclick="goTo('pesan','Antar & Jemput')"><span class="ic">🛵</span>Antar/Jemput</div>
+      <div class="quick-item" onclick="goTo('pesan','Beli-beliin')"><span class="ic">🛒</span>Beli-beliin</div>
+      <div class="quick-item" onclick="goTo('pesan','Urus Dokumen')"><span class="ic">📄</span>Dokumen</div>
+      <div class="quick-item" onclick="goTo('pesan','Angkut Barang')"><span class="ic">📦</span>Angkut</div>
+      <div class="quick-item" onclick="goTo('pesan','Antre & Tunggu')"><span class="ic">⏳</span>Antre/Tunggu</div>
+      <div class="quick-item" onclick="goTo('pesan','Tugas Dadakan')"><span class="ic">✨</span>Dadakan</div>
+    </div>
+
+    <button class="cta-big" onclick="goTo('pesan')">🎫 Buat Tiket Baru</button>
+  </section>
+
+  <!-- ================= LAYANAN ================= -->
+  <section class="view" id="view-layanan">
+    <span class="section-label">Layanan</span>
+    <h2 style="font-size:20px; margin-bottom:16px;">Apa saja, selama bisa disuruh.</h2>
+
+    <div class="stub"><span class="num">01</span><h3>Antar &amp; Jemput</h3><p>Dokumen, paket, titipan makan, sampai jemput anak sekolah.</p><div class="foot"><span class="price">mulai Rp 12.000</span><span class="order-mini" onclick="goTo('pesan','Antar & Jemput')">Pesan</span></div></div>
+    <div class="stub"><span class="num">02</span><h3>Beli-beliin</h3><p>Belanja dapur, obat, oleh-oleh, barang yang cuma ada di toko tertentu.</p><div class="foot"><span class="price">mulai Rp 25.000</span><span class="order-mini" onclick="goTo('pesan','Beli-beliin')">Pesan</span></div></div>
+    <div class="stub"><span class="num">03</span><h3>Urus Dokumen</h3><p>Fotokopi, legalisir, antre kelurahan/bank, bayar tagihan bulanan.</p><div class="foot"><span class="price">mulai Rp 40.000</span><span class="order-mini" onclick="goTo('pesan','Urus Dokumen')">Pesan</span></div></div>
+    <div class="stub"><span class="num">04</span><h3>Angkut Barang</h3><p>Pindahan kos, angkut galon, kardus arsip, furnitur ringan.</p><div class="foot"><span class="price">mulai Rp 50.000</span><span class="order-mini" onclick="goTo('pesan','Angkut Barang')">Pesan</span></div></div>
+    <div class="stub"><span class="num">05</span><h3>Antre &amp; Tunggu</h3><p>Antre tiket, antre sembako subsidi, tunggu teknisi di rumah.</p><div class="foot"><span class="price">Rp 25.000/jam</span><span class="order-mini" onclick="goTo('pesan','Antre & Tunggu')">Pesan</span></div></div>
+    <div class="stub"><span class="num">06</span><h3>Tugas Dadakan</h3><p>Belum ada di daftar? Ceritakan saja, kami hitung dan kabari harganya.</p><div class="foot"><span class="price">nego di chat</span><span class="order-mini" onclick="goTo('pesan','Tugas Dadakan')">Pesan</span></div></div>
+  </section>
+
+  <!-- ================= PESAN ================= -->
+  <section class="view" id="view-pesan">
+    <span class="section-label">Buat Tiket</span>
+    <h2 style="font-size:20px; margin-bottom:16px;">Isi sekali, kami urus sisanya.</h2>
+
+    <div class="field">
+      <label for="nama">Nama</label>
+      <input type="text" id="nama" placeholder="Nama kamu">
+    </div>
+    <div class="field">
+      <label for="kategori">Kategori Tugas</label>
+      <select id="kategori">
+        <option>Antar &amp; Jemput</option>
+        <option>Beli-beliin</option>
+        <option>Urus Dokumen</option>
+        <option>Angkut Barang</option>
+        <option>Antre &amp; Tunggu</option>
+        <option>Tugas Dadakan</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="waktu">Butuh Selesai Kapan</label>
+      <input type="text" id="waktu" placeholder="mis. Hari ini jam 5 sore">
+    </div>
+    <div class="row-2">
+      <div class="field">
+        <label for="lokasi-jemput">Lokasi Jemput</label>
+        <input type="text" id="lokasi-jemput" placeholder="Alamat jemput">
+      </div>
+      <div class="field">
+        <label for="lokasi-tujuan">Lokasi Tujuan</label>
+        <input type="text" id="lokasi-tujuan" placeholder="Alamat tujuan">
+      </div>
+    </div>
+    <div class="field">
+      <label for="detail">Detail Tugas</label>
+      <textarea id="detail" placeholder="Ceritakan tugasnya selengkap mungkin..."></textarea>
+    </div>
+    <button class="cta-big" onclick="kirimTiket()">Kirim Tiket via WhatsApp →</button>
+    <p class="form-note">Tiket tersimpan di Riwayat, dan pesan otomatis dibuka di WhatsApp.</p>
+  </section>
+
+  <!-- ================= RIWAYAT ================= -->
+  <section class="view" id="view-riwayat">
+    <span class="section-label">Riwayat</span>
+    <h2 style="font-size:20px; margin-bottom:16px;">Tiket yang pernah kamu buat.</h2>
+    <div id="riwayat-list"></div>
+  </section>
+
+  <!-- ================= BANTUAN ================= -->
+  <section class="view" id="view-bantuan">
+    <span class="section-label">Bantuan</span>
+    <h2 style="font-size:20px; margin-bottom:16px;">Butuh dibantu langsung?</h2>
+
+    <div class="contact-row">
+      <span class="ic">💬</span>
+      <div>
+        <h4>Chat Admin Suruh.in</h4>
+        <p>Respon rata-rata di bawah 30 menit</p>
+      </div>
+    </div>
+    <button class="cta-big" onclick="bukaWA()">Buka Chat WhatsApp</button>
+
+    <div class="help-card"><h4>📍 Area Layanan</h4><p>Kota Bekasi &amp; sekitarnya.</p></div>
+    <div class="help-card"><h4>💳 Cara Bayar</h4><p>Bayar setelah tugas selesai — tunai atau transfer, dikonfirmasi lewat chat.</p></div>
+    <div class="help-card"><h4>🔒 Keamanan</h4><p>Petugas terverifikasi identitasnya sebelum menerima tiket.</p></div>
+    <div class="help-card"><h4>❓ Tugas belum ada di daftar?</h4><p>Pilih kategori "Tugas Dadakan" di form Pesan, ceritakan saja, kami hitung harganya.</p></div>
+  </section>
+
+</div>
+
+<div class="bottomnav">
+  <button class="navbtn active" data-view="beranda" onclick="switchTab('beranda')"><span class="ic">🏠</span>Beranda</button>
+  <button class="navbtn" data-view="layanan" onclick="switchTab('layanan')"><span class="ic">🗂️</span>Layanan</button>
+  <button class="navbtn" data-view="pesan" onclick="switchTab('pesan')"><span class="ic">🎫</span>Pesan</button>
+  <button class="navbtn" data-view="riwayat" onclick="switchTab('riwayat')"><span class="ic">📜</span>Riwayat</button>
+  <button class="navbtn" data-view="bantuan" onclick="switchTab('bantuan')"><span class="ic">💬</span>Bantuan</button>
+</div>
+
+<div class="install-banner" id="installBanner">
+  <p>Install Suruh.in di layar utama untuk akses lebih cepat.</p>
+  <button onclick="installApp()">Install</button>
+  <button class="close-x" onclick="dismissInstall()">✕</button>
+</div>
+
+<script>
+  const NOMOR_WA = "6282110643957";
+
+  function switchTab(name){
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.getElementById('view-'+name).classList.add('active');
+    document.querySelectorAll('.navbtn').forEach(b=>b.classList.toggle('active', b.dataset.view===name));
+    document.querySelector('.views').scrollTop = 0;
+    if(name === 'riwayat') renderRiwayat();
+  }
+
+  function goTo(name, kategori){
+    switchTab(name);
+    if(kategori){ document.getElementById('kategori').value = kategori; }
+  }
+
+  function simpanRiwayat(data){
+    const list = JSON.parse(localStorage.getItem('suruhin_riwayat') || '[]');
+    list.unshift(data);
+    localStorage.setItem('suruhin_riwayat', JSON.stringify(list.slice(0, 30)));
+  }
+
+  function renderRiwayat(){
+    const el = document.getElementById('riwayat-list');
+    const list = JSON.parse(localStorage.getItem('suruhin_riwayat') || '[]');
+    if(list.length === 0){
+      el.innerHTML = `<div class="empty-state"><span class="ic">🎫</span><p>Belum ada tiket. Tiket yang kamu buat di tab Pesan akan muncul di sini.</p></div>`;
+      return;
+    }
+    el.innerHTML = list.map(t => `
+      <div class="riwayat-item">
+        <div class="top"><span>#${t.id}</span><span>${t.tanggal}</span></div>
+        <h4>${t.kategori}</h4>
+        <p>${t.detail || '-'}</p>
+        <span class="badge">Terkirim ke WA</span>
+      </div>
+    `).join('');
+  }
+
+  function kirimTiket(){
+    const nama = document.getElementById('nama').value || "-";
+    const kategori = document.getElementById('kategori').value;
+    const waktu = document.getElementById('waktu').value || "-";
+    const lokasiJemput = document.getElementById('lokasi-jemput').value || "-";
+    const lokasiTujuan = document.getElementById('lokasi-tujuan').value || "-";
+    const detail = document.getElementById('detail').value || "-";
+
+    const id = String(Math.floor(Math.random()*900+100));
+    simpanRiwayat({
+      id, kategori, detail,
+      tanggal: new Date().toLocaleDateString('id-ID', { day:'2-digit', month:'short' })
+    });
+
+    const pesan = `Halo Suruh.in, saya mau buat tiket pesanan:%0A%0A`
+      + `Nama: ${encodeURIComponent(nama)}%0A`
+      + `Kategori: ${encodeURIComponent(kategori)}%0A`
+      + `Butuh selesai: ${encodeURIComponent(waktu)}%0A`
+      + `Lokasi Jemput: ${encodeURIComponent(lokasiJemput)}%0A`
+      + `Lokasi Tujuan: ${encodeURIComponent(lokasiTujuan)}%0A`
+      + `Detail: ${encodeURIComponent(detail)}`;
+
+    window.open(`https://wa.me/${NOMOR_WA}?text=${pesan}`, '_blank');
+  }
+
+  function bukaWA(){
+    window.open(`https://wa.me/${NOMOR_WA}?text=${encodeURIComponent('Halo Suruh.in, saya mau tanya-tanya dulu.')}`, '_blank');
+  }
+
+  // ---- PWA install prompt ----
+  let deferredPrompt;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    if(!localStorage.getItem('suruhin_install_dismissed')){
+      document.getElementById('installBanner').classList.add('show');
+    }
+  });
+  function installApp(){
+    document.getElementById('installBanner').classList.remove('show');
+    if(deferredPrompt){ deferredPrompt.prompt(); deferredPrompt = null; }
+  }
+  function dismissInstall(){
+    document.getElementById('installBanner').classList.remove('show');
+    localStorage.setItem('suruhin_install_dismissed', '1');
+  }
+
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(()=>{});
+    });
+  }
+</script>
+
+</body>
+</html>
